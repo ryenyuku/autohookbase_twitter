@@ -30,7 +30,7 @@ async function receiveDMEvent(event) {
         if (!event.direct_message_events) {
             return;
         }
-    
+
         // Count the users followers and tweets.
         const users           = Object.values(event.users);
         usersVar = {
@@ -49,55 +49,47 @@ async function receiveDMEvent(event) {
             senderId          : message.message_create.sender_id,
             senderMsgId       : message.id,
         };
- 
+
         // Check to see if the message is undefined/error.
         if (typeof message === 'undefined' || typeof message.message_create === 'undefined') {
             return;
         }
-    
+
         // Check to see if the sender is the same as the recipient of the message.
         if (messageVar.senderId === messageVar.recipientId) {
             return;
         }
-    
-        // [CHANGEABLE] Put your own sender id to block the bot from sending DM to itself.
+
+        /* [CHANGEABLE] Put your own sender id to block the bot from sending DM to itself.
         // Check it in console.log(senderId);
-        if (messageVar.senderId === '1267122167306543104') {
+        if (messageVar.senderId === "1267122167306543104") {
             return;
-        }
-    
-        
+        } */
+
         // [CHANGEABLE] Put your desired keyword here, replace the /tst/ keyword.
-        if (!((messageVar.senderMessage).toLowerCase()).includes('/tst/')) {
+        if (!(messageVar.senderMessage.substring(0,8) === "!menfess")) {
             return;
         }
 
-        // [CHANGEABLE] Rejects all messages from users below 100 followers and 500 tweets.
-        else if (!(usersVar.usersFollowersCount > 100 && usersVar.usersStatusesCount > 300)) {
-            await rejectMessage(messageVar.senderId, messageVar.senderScreenName);
-            return;
-        }
         else
-    
+
         // This if else if functions will check the messages for an image.
         // If there's no image, then it will check for URL/Link.
         // If there's no URL/Link, then it will just post the text.
         if (typeof messageVar.senderAttachment !== 'undefined') {
-    
             try {
-    
                 const senderMediaUrl = messageVar.senderAttachment.media.media_url;
-    
+
                 let image = {};
                 await getMedia(senderMediaUrl).then(response => {
                     //console.log(JSON.stringify(response, null, 4));
-                    image = { 
+                    image = {
                     imageBuffer: Buffer.from(response.body)
                     };
-                }); 
+                });
                 var imageBase64 = (image.imageBuffer).toString('base64');
                 var imageBytes = Buffer.byteLength(image.imageBuffer, 'base64');
-        
+
                 let media = {};
                 await uploadMediaInit(imageBytes).then(response => {
                     //console.log(JSON.stringify(response, null, 4));
@@ -107,11 +99,11 @@ async function receiveDMEvent(event) {
                 });
                 var mediaJson = JSON.parse(media.mediaBody);
                 var mediaIdString = mediaJson.media_id_string;
-                    
+
                 await uploadMediaAppend(mediaIdString, imageBase64).then(response => {
                     //console.log(JSON.stringify(response, null, 4));
                 });
-                   
+
                 await uploadMediaFinalize(mediaIdString).then(response => {
                     //console.log(JSON.stringify(response, null, 4));
                 });
@@ -188,29 +180,25 @@ async function replyDMEvent(event) {
         if (typeof messageVar.senderId === 'undefined' || typeof messageVar.senderScreenName === 'undefined' || messageVar.senderMessage === 'undefined') {
             return;
         }
-    
+
         // Check to see if the sender is the same as the recipient of the message.
         if (messageVar.senderId === messageVar.recipientId) {
             return;
         }
-    
-        // [CHANGEABLE] Put your own sender id to block the bot from sending DM to itself.
+
+        /* [CHANGEABLE] Put your own sender id to block the bot from sending DM to itself.
         // Check it in console.log(senderId);
         if (messageVar.senderId === '1267122167306543104') {
             return;
-        }
-    
+        } */
+
         // [CHANGEABLE] Put your desired keyword here, replace the /tst/ keyword.
-        if (!((messageVar.senderMessage).toLowerCase()).includes('/tst/')) {
+        if (!(messageVar.senderMessage.substring(0, 8) === "!menfess")) {
             return;
         }
 
-        // [CHANGEABLE] Rejects all message from users below 100 followers and 500 tweets.
-        else if (!(usersVar.usersFollowersCount > 100 && usersVar.usersStatusesCount > 300)) {
-            return;
-        }
         else
-        
+
         await replyMessage(messageVar.senderId, messageVar.senderScreenName, messageVar.senderMessage, tweetId.id);
     }
 
@@ -227,7 +215,7 @@ async function replyDMEvent(event) {
     await getTweetId();
 
     await replyDirectMessage();
-} 
+}
 
 // And all this functions below is the functions to be called inside the receive/replyDMEvent function.
 async function markAsRead(message_id, sender_id) {
@@ -268,13 +256,13 @@ async function getMedia(url) {
         oauth: oAuthConfig
     };
     return await get(getImage).then(function(response) {
-        return response; 
+        return response;
     })
     .catch(error => console.error(error));
 }
 
 async function uploadMediaInit(total_bytes) {
-    
+
     const uploadImageInit = {
         url: 'https://upload.twitter.com/1.1/media/upload.json',
         oauth: oAuthConfig,
