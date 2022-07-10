@@ -4,13 +4,16 @@
   "description": "AutoDM/Menfess Twitter bot that implements Autohook and asynchronous function of JavaScript.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "forever start --minUptime 1000 --spinSleepTime 1000 index.js",
+    "stop": "forever stop index.js",
+    "restart": "forever restart index.js"
   },
   "author": "ryenyuku",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "twitter-autohook": "^1.7.2",
-    "request": "^2.88.2"
+    "forever": "^4.0.3",
+    "request": "^2.88.2",
+    "twitter-autohook": "^1.7.2"
   }
 }
