@@ -321,7 +321,7 @@ async function replyMessage(sender_id, sender_screen_name, sender_message, tweet
                         recipient_id: sender_id
                     },
                     message_data: {
-                    text: "Hi @${sender_screen_name}! 👋. Thank you for using ${process.env.BOT_NAME} bot! https://twitter.com/${process.env.BOT_NAME}/status/${tweet_id}"
+                        text: `Hi @${sender_screen_name}! 👋. Thank you for using ${process.env.BOT_NAME} bot! https://twitter.com/${process.env.BOT_NAME}/status/${tweet_id}`
                     }
                 }
             }
