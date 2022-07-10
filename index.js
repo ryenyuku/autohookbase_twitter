@@ -67,7 +67,7 @@ async function receiveDMEvent(event) {
         } */
 
         // [CHANGEABLE] Put your desired keyword here, replace the /tst/ keyword.
-        if (!(messageVar.senderMessage.substring(0,8) === "!menfess")) {
+        if (!(messageVar.senderMessage.substring(0, 8) === "!menfess" && (messageVar.senderMessage.substring(8, 9) === " " || messageVar.senderMessage.substring(8, 9) === "\n"))) {
             return;
         }
 
@@ -107,17 +107,12 @@ async function receiveDMEvent(event) {
                 await uploadMediaFinalize(mediaIdString).then(response => {
                     //console.log(JSON.stringify(response, null, 4));
                 });
-        
-                const senderMediaLink = message.message_create.message_data.entities.urls[0].url;
-                
-                var statusWithUrl = messageVar.senderMessage;
-                var urlToRemove = senderMediaLink;
-                var statusNoUrl = statusWithUrl.replace(urlToRemove, "");
-                
-                const encodeMsg = statusNoUrl;
-                const encodeImg = mediaIdString;
 
-                await postTweet(messageVar.senderScreenName, encodeMsg, undefined, encodeImg);
+                var strippedMsg = "\"".concat(messageVar.senderMessage.substring(9, messageVar.senderMessage.length)).concat("\"");
+                var urlToRemove = message.message_create.message_data.entities.urls[0].url;
+                const finalMsg = strippedMessage.replace(urlToRemove, "");
+
+                await postTweet(messageVar.senderScreenName, finalMsg, undefined, mediaIdString);
             }
     
             catch (e) {
@@ -129,10 +124,9 @@ async function receiveDMEvent(event) {
     
             try {
     
-                const encodeMsg = messageVar.senderMessage;
-                const encodeUrl = messageVar.senderUrl;
+                var strippedMsg = "\"".concat(messageVar.senderMessage.substring(9, messageVar.senderMessage.length)).concat("\"");
 
-                await postTweet(messageVar.senderScreenName, encodeMsg, encodeUrl, undefined);
+                await postTweet(messageVar.senderScreenName, strippedMsg, messageVar.senderUrl, undefined);
             }
             
             catch (e) {
@@ -144,9 +138,9 @@ async function receiveDMEvent(event) {
     
             try {
     
-                const encodeMsg = messageVar.senderMessage;
+                var strippedMsg = "\"".concat(messageVar.senderMessage.substring(9, messageVar.senderMessage.length)).concat("\"");
 
-                await postTweet(messageVar.senderScreenName, encodeMsg, undefined, undefined);
+                await postTweet(messageVar.senderScreenName, strippedMsg, undefined, undefined);
             }
             
             catch (e) {
@@ -193,13 +187,15 @@ async function replyDMEvent(event) {
         } */
 
         // [CHANGEABLE] Put your desired keyword here, replace the /tst/ keyword.
-        if (!(messageVar.senderMessage.substring(0, 8) === "!menfess")) {
+        if (!(messageVar.senderMessage.substring(0, 8) === "!menfess" && (messageVar.senderMessage.substring(8, 9) === " " || messageVar.senderMessage.substring(8, 9) === "\n"))) {
             return;
         }
 
         else
 
-        await replyMessage(messageVar.senderId, messageVar.senderScreenName, messageVar.senderMessage, tweetId.id);
+        var strippedMsg = "\"".concat(messageVar.senderMessage.substring(9, messageVar.senderMessage.length)).concat("\"");
+
+        await replyMessage(messageVar.senderId, messageVar.senderScreenName, strippedMsg, tweetId.id);
     }
 
     // Calling function to mark read the message sent to us. 
@@ -318,47 +314,21 @@ async function replyMessage(sender_id, sender_screen_name, sender_message, tweet
         url: 'https://api.twitter.com/1.1/direct_messages/events/new.json',
         oauth: oAuthConfig,
         json: {
-        event: {
-            type: 'message_create',
-            message_create: {
-            target: {
-                recipient_id: sender_id
-            },
-            message_data: {
-                text: `Hi @${sender_screen_name}! 👋. Thank you for using testingfess autobase! https://twitter.com/testingfess/status/${tweet_id}`
+            event: {
+                type: 'message_create',
+                message_create: {
+                    target: {
+                        recipient_id: sender_id
+                    },
+                    message_data: {
+                    text: "Hi @${sender_screen_name}! 👋. Thank you for using ${process.env.BOT_NAME} bot! https://twitter.com/${process.env.BOT_NAME}/status/${tweet_id}"
+                    }
+                }
             }
-            }
-        }
         }
     };
     console.log(`[${new Date().toLocaleString()}] [CONSOLE] User @${sender_screen_name} says: ${sender_message}`);
     return await post(requestReply).then(function(response) {
-        return response;
-    })
-    .catch(error => console.error(error));
-}
-
-async function rejectMessage(sender_id, sender_screen_name) {
-
-    const requestReject = {
-        url: 'https://api.twitter.com/1.1/direct_messages/events/new.json',
-        oauth: oAuthConfig,
-        json: {
-        event: {
-            type: 'message_create',
-            message_create: {
-            target: {
-                recipient_id: sender_id
-            },
-            message_data: {
-                text: `Hi @${sender_screen_name}! 👋. You should have atleast 100 followers, and 300 tweets in order to send a message to this base.`,
-            }
-            }
-        }
-        }
-    };
-    console.log(`[${new Date().toLocaleString()}] [CONSOLE] Rejected user @${sender_screen_name}'s message`);
-    return await post(requestReject).then(function(response) {
         return response;
     })
     .catch(error => console.error(error));

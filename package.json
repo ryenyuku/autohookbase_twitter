@@ -1,5 +1,5 @@
 {
-  "name": "autohookbase_twitter",
+  "name": "twitter-menfess-bot",
   "version": "1.0.0",
   "description": "AutoDM/Menfess Twitter bot that implements Autohook and asynchronous function of JavaScript.",
   "main": "index.js",
