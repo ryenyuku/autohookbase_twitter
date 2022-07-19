@@ -110,7 +110,7 @@ async function receiveDMEvent(event) {
 
                 var strippedMsg = "\"".concat(messageVar.senderMessage.substring(9, messageVar.senderMessage.length)).concat("\"");
                 var urlToRemove = message.message_create.message_data.entities.urls[0].url;
-                const finalMsg = strippedMessage.replace(urlToRemove, "");
+                const finalMsg = strippedMsg.replace(urlToRemove, "");
 
                 await postTweet(messageVar.senderScreenName, finalMsg, undefined, mediaIdString);
             }
