@@ -22,7 +22,6 @@ const oAuthConfig   = {
 
 // This is where the event processing (posting tweet, replying direct message) happens.
 let messageVar  = {};
-let usersVar    = {};
 async function receiveDMEvent(event) {
 
     async function getDirectMessage() {
@@ -30,13 +29,6 @@ async function receiveDMEvent(event) {
         if (!event.direct_message_events) {
             return;
         }
-
-        // Count the users followers and tweets.
-        const users           = Object.values(event.users);
-        usersVar = {
-            usersFollowersCount : (Object.values(users)[0]).followers_count,
-            usersStatusesCount  : (Object.values(users)[0]).statuses_count
-        };
 
         // Assigns the important constant variables.
         var message           = event.direct_message_events.shift();
